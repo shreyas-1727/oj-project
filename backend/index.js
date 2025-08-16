@@ -18,7 +18,7 @@ app.use(helmet());
 // Defining a whitelist of trusted URLs
 const allowedOrigins = [
   'http://localhost:5173', //local frontend for development
-  'https://oj-project-pi.vercel.app/' // Live Vercel frontend URL
+  'https://oj-project-pi.vercel.app', // Live Vercel frontend URL
 ];
 
 app.use(cors({
