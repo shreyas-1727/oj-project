@@ -34,20 +34,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// Connecting to Database
-DBConnection();
-
-const User = require("./models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
-//MIDDLEWARE SETUP
-// CORS Middleware to allow requests from frontend
-app.use(cors({
-  origin: true, // Reflects the request origin
-  credentials: true, // Allows cookies to be sent
-}));
-
 // Middleware to parse JSON bodies
 app.use(express.json());
 
@@ -55,6 +41,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(express.urlencoded({ extended: true }));
+
+// Connecting to Database
+DBConnection();
+
+const User = require("./models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // A simple welcome route
 app.get("/", (req, res) => {
