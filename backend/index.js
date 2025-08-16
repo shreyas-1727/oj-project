@@ -10,8 +10,27 @@ dotenv.config();
 const app = express();
 app.use(helmet());
 
+// app.use(cors({
+//   origin: true,
+//   credentials: true,
+// }));
+
+// Defining a whitelist of trusted URLs
+const allowedOrigins = [
+  'http://localhost:5173', //local frontend for development
+  'https://oj-project-pi.vercel.app/' // Live Vercel frontend URL
+];
+
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    // Allownig requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
 
