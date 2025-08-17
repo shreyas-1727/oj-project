@@ -68,7 +68,8 @@ exports.loginUser = async (req, res) => {
     //Cookie Options 
     const cookieOptions = {
       httpOnly: true, // The cookie cannot be accessed by client-side JavaScript
-      secure: process.env.NODE_ENV === 'production', // Using secure cookies in production
+      secure: true, // Using secure cookies in production
+      sameSite: 'None',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24-hour expiry
     };
 
