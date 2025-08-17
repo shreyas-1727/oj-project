@@ -16,7 +16,8 @@ app.use(helmet());
 // Define a whitelist of trusted URLs for CORS
 const allowedOrigins = [
   'http://localhost:5173', 
-  'https://oj-project-pi.vercel.app' // Your main Vercel URL
+  'https://oj-project-pi.vercel.app', 
+  'https://oj-project-six.vercel.app'
 ];
 
 app.use(cors({
