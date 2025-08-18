@@ -69,8 +69,9 @@ exports.loginUser = async (req, res) => {
     const cookieOptions = {
       httpOnly: true, // The cookie cannot be accessed by client-side JavaScript
       secure: true, // Using secure cookies in production
-      sameSite: 'None',
+      sameSite: 'none',
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24-hour expiry
+      path: '/',
     };
 
     //Seting cookie and sending response
@@ -194,7 +195,7 @@ exports.logoutUser = (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: true, // Using secure cookies in production
-    sameSite: 'None',
+    sameSite: 'none',
     path: '/', // Specify the root path
   });
   res.status(200).json({ success: true, message: 'Logged out successfully' });

@@ -11,53 +11,19 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchSubmissions = async () => {
-  //     try {
-  //       const data = await userService.getMySubmissions();
-  //       setSubmissions(data);
-  //     } catch (err) {
-  //       setError('Failed to fetch submission history.');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchSubmissions();
-  // }, []);
-
   useEffect(() => {
-    //let isMounted = true; // Flag to prevent state updates on unmounted component
-    console.log("--- DashboardPage MOUNTED ---");
     const fetchSubmissions = async () => {
-      console.log("Fetching submissions...");
       try {
         const data = await userService.getMySubmissions();
-        console.log("Data received:", data);
-        //if (isMounted) { // Only update state if the component is still mounted
-          setSubmissions(data);
-        //}
+        setSubmissions(data);
       } catch (err) {
-        console.error("Fetch failed:", err);
-        //if (isMounted) {
-          //setError('Failed to fetch submission history.');
-          toast.error('Failed to fetch submission history.');
-        //}
+        toast.error('Failed to fetch submission history.');
       } finally {
-        //if (isMounted) {
-          setLoading(false);
-        //}
+        setLoading(false);
       }
     };
-
     fetchSubmissions();
-
-    // This is the cleanup function
-    // It runs when the component "unmounts" (e.g., during the Strict Mode double-run)
-    return () => {
-      console.log("--- DashboardPage UNMOUNTED ---");
-      //isMounted = false;
-    };
-  }, []); // The empty dependency array is correct
+  }, []);
 
   if (loading) {
         return (
