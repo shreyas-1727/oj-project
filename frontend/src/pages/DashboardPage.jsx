@@ -3,6 +3,7 @@ import useAuth from '../hooks/useAuth';
 import userService from '../api/userService';
 import { Link } from 'react-router-dom';
 import SkeletonLoader from '../components/SkeletonLoader';
+import toast from 'react-hot-toast';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -10,19 +11,53 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchSubmissions = async () => {
+  //     try {
+  //       const data = await userService.getMySubmissions();
+  //       setSubmissions(data);
+  //     } catch (err) {
+  //       setError('Failed to fetch submission history.');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchSubmissions();
+  // }, []);
+
   useEffect(() => {
+    //let isMounted = true; // Flag to prevent state updates on unmounted component
+    console.log("--- DashboardPage MOUNTED ---");
     const fetchSubmissions = async () => {
+      console.log("Fetching submissions...");
       try {
         const data = await userService.getMySubmissions();
-        setSubmissions(data);
+        console.log("Data received:", data);
+        //if (isMounted) { // Only update state if the component is still mounted
+          setSubmissions(data);
+        //}
       } catch (err) {
-        setError('Failed to fetch submission history.');
+        console.error("Fetch failed:", err);
+        //if (isMounted) {
+          //setError('Failed to fetch submission history.');
+          toast.error('Failed to fetch submission history.');
+        //}
       } finally {
-        setLoading(false);
+        //if (isMounted) {
+          setLoading(false);
+        //}
       }
     };
+
     fetchSubmissions();
-  }, []);
+
+    // This is the cleanup function
+    // It runs when the component "unmounts" (e.g., during the Strict Mode double-run)
+    return () => {
+      console.log("--- DashboardPage UNMOUNTED ---");
+      //isMounted = false;
+    };
+  }, []); // The empty dependency array is correct
 
   if (loading) {
         return (
@@ -40,7 +75,7 @@ const DashboardPage = () => {
                 </div>
             </div>
         );
-    };
+    }
   if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
 
   return (
@@ -51,9 +86,9 @@ const DashboardPage = () => {
       
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">My Profile</h2>
-        <p><strong>Username:</strong> {user?.username}</p>
-        <p><strong>Email:</strong> {user?.email}</p>
-        <p><strong>Role:</strong> {user?.role}</p>
+        <p className="dark:text-gray-300"><strong>Username:</strong> {user?.username}</p>
+        <p className="dark:text-gray-300"><strong>Email:</strong> {user?.email}</p>
+        <p className="dark:text-gray-300"><strong>Role:</strong> {user?.role}</p>
       </div>
 
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">My Submissions</h2>
@@ -70,7 +105,7 @@ const DashboardPage = () => {
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {submissions.map((sub) => (
               <tr key={sub._id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">
                   <Link to={`/problem/${sub.problemId?._id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">
                     {sub.problemId?.title || 'Problem not found'}
                   </Link>
@@ -82,13 +117,17 @@ const DashboardPage = () => {
                     {sub.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{sub.language}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-200">{sub.language}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{new Date(sub.createdAt).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {submissions.length === 0 && <p className="text-center p-4">You haven't made any submissions yet.</p>}
+        {submissions.length === 0 && (
+          <p className="text-center p-4 text-gray-500 dark:text-gray-400">
+            You haven't made any submissions yet.
+          </p>
+        )}
       </div>
     </div>
   );

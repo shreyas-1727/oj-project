@@ -193,8 +193,8 @@ exports.logoutUser = (req, res) => {
   // Passing the same options used when setting the cookie to ensure it's cleared
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict', // Be explicit for modern browsers
+    secure: true, // Using secure cookies in production
+    sameSite: 'None',
     path: '/', // Specify the root path
   });
   res.status(200).json({ success: true, message: 'Logged out successfully' });

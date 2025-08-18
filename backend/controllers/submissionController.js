@@ -32,7 +32,7 @@ exports.createSubmission = async (req, res) => {
 
       try {
         // Calling the compiler service's /run endpoint
-        const response = await axios.post('http://localhost:5000/run', {
+        const response = await axios.post(process.env.COMPILER_API_URL, {
           language,
           code,
           input: testCase.input,

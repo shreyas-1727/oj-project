@@ -66,6 +66,7 @@ const ProblemDetailPage = () => {
       return;
     }
 
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setSubmissionResult(null);
     setRunOutput('');
@@ -76,11 +77,12 @@ const ProblemDetailPage = () => {
     toast.promise(submissionPromise, {
       loading: 'Judging your submission...',
       success: (result) => `Verdict: ${result.status}`,
-      error: 'Submission failed!',
+      //error: 'Submission failed!',
+      error: (err) => err.response?.data?.message || 'Submission failed!',
     });
 
     try {
-      const submission = await submissionService.createSubmission(problemId, code, language);
+      const submission = await submissionPromise;
       setSubmissionResult(submission);
     } catch (err) {
       setSubmissionResult({
