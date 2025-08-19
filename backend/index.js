@@ -53,6 +53,23 @@ app.use('/api/run', require('./routes/runRoutes'));
 
 const PORT = process.env.PORT || 7000;
 
+app.get("/api/run/ping", async (req, res) => {
+  try {
+    const response = await axios.get(process.env.COMPILER_API_URL.replace("/run", ""));
+    res.json({
+      ok: true,
+      target: process.env.COMPILER_API_URL,
+      compiler: response.data
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      target: process.env.COMPILER_API_URL,
+      error: err.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}!`);
 
