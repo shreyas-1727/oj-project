@@ -2,13 +2,13 @@ const { exec } = require("child_process");
 const path = require("path");
 
 const executePy = (filepath, input) => { // Takes the input string directly
-  const codesPath = path.resolve(process.cwd(), "codes");
+  const projectRoot = path.resolve(process.cwd());
   const codeFile = path.basename(filepath);
 
   return new Promise((resolve, reject) => {
     const dockerCommand = `docker run -i --rm \
-      -v "${codesPath}:/app" \
-      -w /app python:3.8-slim python ${codeFile}`;
+      -v "${projectRoot}:/app" \
+      -w /app python:3.8-slim python codes/${codeFile}`;
 
     const childProcess = exec(
       dockerCommand,
@@ -23,8 +23,10 @@ const executePy = (filepath, input) => { // Takes the input string directly
       }
     );
 
-    // Piping the input string directly to the container's stdin
-    childProcess.stdin.write(input);
+    // Pipe input into the container's stdin
+    if (input) {
+      childProcess.stdin.write(input);
+    }
     childProcess.stdin.end();
   });
 };
