@@ -2,7 +2,8 @@ const { exec } = require("child_process");
 const path = require("path");
 
 const executePy = (filepath, input) => {
-  const projectRoot = path.resolve(process.cwd());
+  // prefer host path if provided via env
+  const projectRoot = process.env.HOST_PROJECT_ROOT || path.resolve(process.cwd());
   const codeFile = path.basename(filepath);
 
   const dockerCommand = `docker run -i --rm -v "${projectRoot}:/app" -w /app python:3.8-slim python codes/${codeFile}`;

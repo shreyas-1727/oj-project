@@ -9,7 +9,7 @@ const executeCpp = (filepath, inputPath) => {
   const jobId = path.basename(filepath).split(".")[0];
 
   // mount project root once
-  const projectRoot = path.resolve(process.cwd());
+  const projectRoot = process.env.HOST_PROJECT_ROOT || path.resolve(process.cwd());
 
   const dockerCommand = `docker run --rm \
 -v "${projectRoot}:/app" \
