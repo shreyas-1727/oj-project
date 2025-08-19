@@ -29,7 +29,9 @@ const executeJava = async (code, input = '') => {
     await fs.writeFile(inputFilePath, input);
 
     //Constructing the Docker command to use the files
-    const dockerCommand = `docker run --rm -v "${jobPath}:/app" -w /app openjdk:11-slim sh -c "javac Main.java && java Main < input.txt"`;
+    const dockerCommand = `docker run --rm \
+      -v "${jobPath}:/app" \
+      -w /app openjdk:11-slim sh -c "javac Main.java && java Main < input.txt"`;
 
     // Executing the command
     const { stdout, stderr } = await execPromise(dockerCommand);

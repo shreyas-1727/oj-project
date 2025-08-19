@@ -15,7 +15,11 @@ const executeCpp = (filepath, inputPath) => {
 
   return new Promise((resolve, reject) => {
     // Constructing the Docker command
-    const dockerCommand = `docker run --rm -v "${path.dirname(filepath)}:/app/codes" -v "${path.dirname(inputPath)}:/app/inputs" -v "${outputPath}:/app/outputs" -w /app gcc sh -c "g++ codes/${path.basename(filepath)} -o outputs/${jobId}.out && ./outputs/${jobId}.out < inputs/${path.basename(inputPath)}"`;
+    const dockerCommand = `docker run --rm \
+      -v "${path.dirname(filepath)}:/app" \
+      -v "${path.dirname(inputPath)}:/app" \
+      -v "${outputPath}:/app/outputs" \
+      -w /app gcc sh -c "g++ ${path.basename(filepath)} -o outputs/${jobId}.out && ./outputs/${jobId}.out < ${path.basename(inputPath)}"`;
 
     exec(dockerCommand, (error, stdout, stderr) => {
       if (error) {

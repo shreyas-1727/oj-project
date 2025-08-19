@@ -6,7 +6,9 @@ const executePy = (filepath, input) => { // Takes the input string directly
   const codeFile = path.basename(filepath);
 
   return new Promise((resolve, reject) => {
-    const dockerCommand = `docker run -i --rm -v "${codesPath}:/app/codes" -w /app python:3.8-slim python codes/${codeFile}`;
+    const dockerCommand = `docker run -i --rm \
+      -v "${codesPath}:/app" \
+      -w /app python:3.8-slim python ${codeFile}`;
 
     const childProcess = exec(
       dockerCommand,
@@ -14,10 +16,10 @@ const executePy = (filepath, input) => { // Takes the input string directly
         if (error) {
           reject({ error, stderr });
         }
-        if (stderr) {
+        else if (stderr) {
           reject(stderr);
         }
-        resolve(stdout);
+        else resolve(stdout);
       }
     );
 
