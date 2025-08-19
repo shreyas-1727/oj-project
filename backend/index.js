@@ -48,6 +48,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/problems', require('./routes/problemRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/run', require('./routes/runRoutes.js'));
 // --- End of Routes ---
 
 const PORT = process.env.PORT || 7000;
