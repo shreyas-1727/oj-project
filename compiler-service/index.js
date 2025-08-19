@@ -79,7 +79,7 @@ app.post('/run', async (req, res) => {
     
     if (language === 'cpp' && filePath) {
       const jobId = path.basename(filePath).split(".")[0];
-      const outPath = path.join(__dirname, 'outputs', `${jobId}.out`);
+      const outPath = path.join(process.cwd(), 'outputs', `${jobId}.out`);
       if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
     }
   }

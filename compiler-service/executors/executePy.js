@@ -2,23 +2,29 @@ const { exec } = require("child_process");
 const path = require("path");
 
 const executePy = (filepath, input) => {
-  // prefer host path if provided via env
-  const projectRoot = process.env.HOST_PROJECT_ROOT || path.resolve(process.cwd());
+  const codesPath = path.resolve(process.cwd(), "codes");
   const codeFile = path.basename(filepath);
 
-  const dockerCommand = `docker run -i --rm -v "${projectRoot}:/app" -w /app python:3.8-slim python codes/${codeFile}`;
-
-  console.log("DEBUG executePy - dockerCommand:", dockerCommand);
-
   return new Promise((resolve, reject) => {
-    const child = exec(dockerCommand, (error, stdout, stderr) => {
-      if (error) return reject({ error, stderr });
-      if (stderr) return reject(stderr);
-      resolve(stdout);
-    });
-    if (input) child.stdin.write(input);
-    child.stdin.end();
+    const dockerCommand = `docker run -i --rm -v "${codesPath}:/app/codes" -w /app python:3.8-slim python codes/${codeFile}`;
+
+    const childProcess = exec(
+      dockerCommand,
+      (error, stdout, stderr) => {
+        if (error) {
+          reject({ error, stderr });
+        }
+        if (stderr) {
+          reject(stderr);
+        }
+        resolve(stdout);
+      }
+    );
+    childProcess.stdin.write(input);
+    childProcess.stdin.end();
   });
 };
 
-module.exports = { executePy };
+module.exports = {
+  executePy,
+};
