@@ -1,5 +1,5 @@
-# Using an official Node.js runtime as a parent image.
-FROM node:18-alpine
+# Use Debian-based Node image
+FROM node:18-bullseye
 
 # Install Docker CLI
 RUN apt-get update && apt-get install -y docker.io
