@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const axios = require("axios");
 
 dotenv.config();
 
