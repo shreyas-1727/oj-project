@@ -48,8 +48,15 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/problems', require('./routes/problemRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
-app.use('/api/run', require('./routes/runRoutes.js'));
+app.use('/api/run', require('./routes/runRoutes'));
 // --- End of Routes ---
+
+app._router.stack.forEach(r => {
+  if (r.route && r.route.path) {
+    console.log("Route:", r.route.path);
+  }
+});
+
 
 const PORT = process.env.PORT || 7000;
 
