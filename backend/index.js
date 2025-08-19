@@ -51,15 +51,17 @@ app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/run', require('./routes/runRoutes'));
 // --- End of Routes ---
 
-app._router.stack.forEach(r => {
-  if (r.route && r.route.path) {
-    console.log("Route:", r.route.path);
-  }
-});
-
-
 const PORT = process.env.PORT || 7000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}!`);
+
+  // Debug: list all routes
+  if (app._router && app._router.stack) {
+    app._router.stack.forEach((r) => {
+      if (r.route && r.route.path) {
+        console.log("Route:", r.route.path);
+      }
+    });
+  }
 });
