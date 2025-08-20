@@ -1,23 +1,21 @@
-# Use Debian-based Node image
-FROM node:18-bullseye
+# Use an official, lightweight Node.js runtime as a parent image.
+FROM node:18-alpine
 
-# Install Docker CLI
-RUN apt-get update && apt-get install -y docker.io
+# This is the crucial step that installs the Docker command-line tool
+RUN apk add --no-cache docker-cli
 
-# Seting the working directory inside the container
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copying package.json and package-lock.json to the working directory
+# Copy package files and install production dependencies
 COPY package*.json ./
+RUN npm install --production
 
-# Installing the application's dependencies
-RUN npm install
-
-# Copying the rest of the application's source code
+# Copy the rest of the application's source code
 COPY . .
 
-# The service runs on port 5000, so exopsing it
+# Expose the port the service runs on
 EXPOSE 5000
 
-# Defining the command to run the application
+# Define the command to run the application
 CMD [ "npm", "start" ]
