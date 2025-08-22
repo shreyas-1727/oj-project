@@ -1,30 +1,29 @@
-const { exec } = require("child_process");
+const { spawn } = require("child_process");
 const path = require("path");
 
-const executePy = (filepath, input) => {
-  const codesPath = path.resolve(process.cwd(), "codes");
-  const codeFile = path.basename(filepath);
-
+const executePy = (filepath, input = "") => {
   return new Promise((resolve, reject) => {
-    const dockerCommand = `docker run -i --rm -v "${codesPath}:/app/codes" -w /app python:3.8-slim python codes/${codeFile}`;
+    const py = spawn("python3", ["-u", filepath], {
+      cwd: process.cwd()
+    });
 
-    const childProcess = exec(
-      dockerCommand,
-      (error, stdout, stderr) => {
-        if (error) {
-          reject({ error, stderr });
-        }
-        if (stderr) {
-          reject(stderr);
-        }
-        resolve(stdout);
-      }
-    );
-    childProcess.stdin.write(input);
-    childProcess.stdin.end();
+    let stdout = "";
+    let stderr = "";
+
+    py.stdout.on("data", (d) => (stdout += d.toString()));
+    py.stderr.on("data", (d) => (stderr += d.toString()));
+
+    py.on("error", (err) => reject({ message: "Failed to start python3", error: err }));
+
+    py.on("close", (code) => {
+      if (code !== 0) return reject({ message: `Python exited with code ${code}`, stderr, stdout });
+      resolve(stdout);
+    });
+
+    // pipe input
+    if (input) py.stdin.write(input);
+    py.stdin.end();
   });
 };
 
-module.exports = {
-  executePy,
-};
+module.exports = { executePy };

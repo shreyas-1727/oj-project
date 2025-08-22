@@ -1,61 +1,42 @@
 const { exec } = require("child_process");
-const fs = require("fs/promises"); // Using the promise-based version of fs
+const fs = require("fs/promises");
 const path = require("path");
 const { v4: uuid } = require("uuid");
 const util = require("util");
-const execPromise = util.promisify(exec); // Promisify exec for async/await
+const execPromise = util.promisify(exec);
 
 const tempPath = path.resolve(process.cwd(), "temp");
 
-// Creating temp directory once on startup
-(async () => {
-  try {
-    await fs.mkdir(tempPath, { recursive: true });
-  } catch (error) {
-    console.error("Error creating temp directory:", error);
-  }
-})();
+const ensureTemp = async () => {
+  await fs.mkdir(tempPath, { recursive: true });
+};
 
-const executeJava = async (code, input = '') => {
+const executeJava = async (code, input = "") => {
+  await ensureTemp();
+
   const jobId = uuid();
-  const jobPath = path.join(tempPath, jobId);
-  const codeFilePath = path.join(jobPath, "Main.java");
-  const inputFilePath = path.join(jobPath, "input.txt");
+  const jobDir = path.join(tempPath, jobId);
+  const codeFile = path.join(jobDir, "Main.java");
+  const inputFile = path.join(jobDir, "input.txt");
 
   try {
-    //Creating unique directory and files using async/await
-    await fs.mkdir(jobPath, { recursive: true });
-    await fs.writeFile(codeFilePath, code);
-    await fs.writeFile(inputFilePath, input);
+    await fs.mkdir(jobDir, { recursive: true });
+    await fs.writeFile(codeFile, code);
+    await fs.writeFile(inputFile, input ?? "");
 
-    //Constructing the Docker command to use the files
-    const dockerCommand = `docker run --rm \
-      -v "${jobPath}:/app" \
-      -w /app openjdk:11-slim sh -c "javac Main.java && java Main < input.txt"`;
-
-    // Executing the command
-    const { stdout, stderr } = await execPromise(dockerCommand);
-
-    if (stderr) {
-      // Throw stderr to be caught by the catch block
-      throw new Error(stderr);
-    }
+    // Compile & run directly 
+    // Using sh -c to handle redirection cleanly.
+    const cmd = `sh -c "javac Main.java && java Main < input.txt"`;
+    const { stdout } = await execPromise(cmd, { cwd: jobDir, timeout: 1000 * 15 });
 
     return stdout;
-
   } catch (error) {
-    // Re-throw the error to be handled by the controller
-    throw error;
+    // Including stderr if present
+    throw new Error(error.stderr || error.message || "Java execution failed");
   } finally {
-    //Ensuring cleanup always happens
-    try {
-      await fs.rm(jobPath, { recursive: true, force: true });
-    } catch (cleanupError) {
-      console.error("Error during cleanup:", cleanupError);
-    }
+    // cleanup
+    try { await fs.rm(jobDir, { recursive: true, force: true }); } catch {}
   }
 };
 
-module.exports = {
-  executeJava,
-};
+module.exports = { executeJava };
